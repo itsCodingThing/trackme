@@ -1,7 +1,8 @@
-import TrackerMap from "@/components/tracker-map";
-import { useGeoTracker } from "@/hooks/useGeoTracker";
 import { useEffect } from "react";
-import { Button } from "./components/ui/button";
+import TrackerMap from "@/components/tracker-map";
+import { Button } from "@/components/ui/button";
+import useGeoTracker from "@/hooks/useGeoTracker";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function TrackerPage() {
 	const { route, distance, isTracking, start, pause, stop, reset } =
@@ -14,48 +15,53 @@ export default function TrackerPage() {
 	});
 
 	return (
-		<div className="h-screen flex flex-col">
-			<div className="p-4 bg-white shadow flex justify-between">
-				<div>
-					<div className="text-xs text-gray-500">Distance</div>
-					<div className="text-lg font-semibold">{distanceKm} km</div>
+		<>
+			<div className="h-screen flex flex-col">
+				<div className="p-4 bg-white shadow flex justify-between">
+					<div>
+						<div className="text-xs text-gray-500">Distance</div>
+						<div className="text-lg font-semibold">{distanceKm} km</div>
+					</div>
+
+					<div className="flex gap-2">
+						{isTracking && (
+							<Button type="button" onClick={pause}>
+								Pause
+							</Button>
+						)}
+
+						{!isTracking && route.length > 0 && (
+							<>
+								<Button type="button" onClick={start}>
+									Resume
+								</Button>
+								<Button type="button" onClick={stop}>
+									Stop
+								</Button>
+							</>
+						)}
+
+						{route.length > 0 && (
+							<Button type="button" onClick={reset}>
+								Reset
+							</Button>
+						)}
+					</div>
 				</div>
 
-				<div className="flex gap-2">
-					{!isTracking && route.length === 0 && (
-						<Button type="button" onClick={start}>
-							Start
-						</Button>
-					)}
-
-					{isTracking && (
-						<Button type="button" onClick={pause}>
-							Pause
-						</Button>
-					)}
-
-					{!isTracking && route.length > 0 && (
-						<>
+				<div className="flex-1 p-2">
+					{route.length ? (
+						<TrackerMap route={route} />
+					) : (
+						<div className="h-full flex justify-center items-center">
 							<Button type="button" onClick={start}>
-								Resume
+								Start
 							</Button>
-							<Button type="button" onClick={stop}>
-								Stop
-							</Button>
-						</>
-					)}
-
-					{route.length > 0 && (
-						<Button type="button" onClick={reset}>
-							Reset
-						</Button>
+						</div>
 					)}
 				</div>
 			</div>
-
-			<div className="flex-1">
-				<TrackerMap route={route} />
-			</div>
-		</div>
+			<Toaster />
+		</>
 	);
 }

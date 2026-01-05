@@ -1,11 +1,18 @@
 import * as turf from "@turf/turf";
 import { useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 
-type Point = {
+interface Point {
 	lat: number;
 	lng: number;
 	timestamp: number;
-};
+}
+
+interface GeolocationOptions {
+	enableHighAccuracy?: boolean;
+	maximumAge?: number;
+	timeout?: number;
+}
 
 function distanceBetween(p1: Point, p2: Point) {
 	return turf.distance(
@@ -15,7 +22,7 @@ function distanceBetween(p1: Point, p2: Point) {
 	);
 }
 
-export function useGeoTracker() {
+export default function useGeoTracker(options: GeolocationOptions = {}) {
 	const watchIdRef = useRef<number | null>(null);
 	const lastPointRef = useRef<Point | null>(null);
 
@@ -56,15 +63,21 @@ export function useGeoTracker() {
 				lastPointRef.current = point;
 			},
 			(err) => {
-				console.error(err);
+				setIsTracking(false);
+				setRoute([]);
+				setDistance(0);
+
+				if (watchIdRef.current !== null) {
+					navigator.geolocation.clearWatch(watchIdRef.current);
+					watchIdRef.current = null;
+				}
+
+				lastPointRef.current = null;
+				toast.error(`unable use geoloaction: ${err.message}`);
 			},
-			{
-				enableHighAccuracy: true,
-				maximumAge: 1000,
-				timeout: 10000,
-			},
+			options,
 		);
-	}, []);
+	}, [options]);
 
 	const pause = useCallback(() => {
 		if (watchIdRef.current !== null) {
