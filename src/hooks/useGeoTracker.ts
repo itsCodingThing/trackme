@@ -2,7 +2,7 @@ import * as turf from "@turf/turf";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
-interface Point {
+export interface Point {
 	lat: number;
 	lng: number;
 	timestamp: number;
@@ -14,7 +14,16 @@ interface GeolocationOptions {
 	timeout?: number;
 }
 
-function distanceBetween(p1: Point, p2: Point) {
+const TrackingStatus = {
+	IDLE: "idle",
+	TRACKING: "tracking",
+	PAUSED: "paused",
+	STOPPED: "stopped",
+} as const;
+
+type TrackingState = (typeof TrackingStatus)[keyof typeof TrackingStatus];
+
+export function distanceBetween(p1: Point, p2: Point) {
 	return turf.distance(
 		turf.point([p1.lng, p1.lat]),
 		turf.point([p2.lng, p2.lat]),
@@ -28,7 +37,7 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 
 	const [route, setRoute] = useState<Point[]>([]);
 	const [distance, setDistance] = useState(0); // meters
-	const [isTracking, setIsTracking] = useState(false);
+	const [status, setStatus] = useState<TrackingState>("idle");
 
 	const start = useCallback(() => {
 		if (!navigator.geolocation) {
@@ -38,7 +47,7 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 
 		if (watchIdRef.current !== null) return;
 
-		setIsTracking(true);
+		setStatus("tracking");
 
 		watchIdRef.current = navigator.geolocation.watchPosition(
 			(position) => {
@@ -63,7 +72,7 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 				lastPointRef.current = point;
 			},
 			(err) => {
-				setIsTracking(false);
+				setStatus("stopped");
 				setRoute([]);
 				setDistance(0);
 
@@ -80,28 +89,40 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 	}, [options]);
 
 	const pause = useCallback(() => {
-		if (watchIdRef.current !== null) {
-			navigator.geolocation.clearWatch(watchIdRef.current);
-			watchIdRef.current = null;
-			setIsTracking(false);
-		}
+		if (!watchIdRef.current) return;
+
+		navigator.geolocation.clearWatch(watchIdRef.current);
+		watchIdRef.current = null;
+
+		setStatus("paused");
 	}, []);
 
 	const stop = useCallback(() => {
-		pause();
+		if (!watchIdRef.current) return;
+
+		navigator.geolocation.clearWatch(watchIdRef.current);
+		watchIdRef.current = null;
 		lastPointRef.current = null;
-	}, [pause]);
+
+		setStatus("stopped");
+	}, []);
 
 	const reset = useCallback(() => {
-		stop();
+		if (!watchIdRef.current) return;
+
+		navigator.geolocation.clearWatch(watchIdRef.current);
+		watchIdRef.current = null;
+		lastPointRef.current = null;
+
 		setRoute([]);
 		setDistance(0);
-	}, [stop]);
+		setStatus("idle");
+	}, []);
 
 	return {
 		route,
 		distance,
-		isTracking,
+		status,
 		start,
 		pause,
 		stop,

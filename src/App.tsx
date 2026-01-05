@@ -5,6 +5,15 @@ import useGeoTracker from "@/hooks/useGeoTracker";
 import { Toaster } from "@/components/ui/sonner";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "./components/ui/card";
+import TrackingTable from "./components/tracking-table";
 
 function LoadingPoints() {
 	return (
@@ -19,8 +28,8 @@ function LoadingPoints() {
 	);
 }
 
-export default function TrackerPage() {
-	const { route, distance, isTracking, start, pause, stop, reset } =
+export default function App() {
+	const { route, distance, status, start, pause, stop, reset } =
 		useGeoTracker();
 
 	const distanceKm = (distance / 1000).toFixed(2);
@@ -30,59 +39,55 @@ export default function TrackerPage() {
 	});
 
 	return (
-		<>
-			<div className="h-screen flex flex-col">
-				<div className="p-4 bg-white shadow flex justify-between">
-					<div>
-						<div className="text-xs text-gray-500">Distance</div>
-						<div className="text-lg font-semibold">{distanceKm} km</div>
-					</div>
+		<div className="h-svh container mx-auto p-2">
+			<Card className="h-96 rounded-b-none pb-0">
+				<CardHeader>
+					<CardDescription>Distance</CardDescription>
+					<CardTitle>{distanceKm} km</CardTitle>
+					<CardAction className="gap-1">
+						<div className="flex gap-1">
+							{status === "tracking" && (
+								<>
+									<Button type="button" onClick={pause}>
+										Pause
+									</Button>
+									<Button type="button" onClick={reset}>
+										Reset
+									</Button>
+								</>
+							)}
 
-					<div className="flex gap-2">
-						{isTracking && (
-							<Button type="button" onClick={pause}>
-								Pause
-							</Button>
-						)}
-
-						{!isTracking && route.length > 0 && (
-							<>
-								<Button type="button" onClick={start}>
-									Resume
-								</Button>
-								<Button type="button" onClick={stop}>
-									Stop
-								</Button>
-							</>
-						)}
-
-						{route.length > 0 && (
-							<Button type="button" onClick={reset}>
-								Reset
-							</Button>
-						)}
-					</div>
-				</div>
-
-				<div className="flex-1 p-2">
-					{isTracking ? (
-						route.length ? (
-							<TrackerMap route={route} />
-						) : (
-							<div className="h-full flex justify-center items-center">
-								<LoadingPoints />
-							</div>
-						)
-					) : (
+							{status === "paused" && (
+								<>
+									<Button type="button" onClick={start}>
+										Resume
+									</Button>
+									<Button type="button" onClick={stop}>
+										Stop
+									</Button>
+								</>
+							)}
+						</div>
+					</CardAction>
+				</CardHeader>
+				<CardContent className="h-full p-1 bg-black">
+					{status === "idle" ? (
 						<div className="h-full flex justify-center items-center">
 							<Button type="button" onClick={start}>
 								Start
 							</Button>
 						</div>
+					) : route.length ? (
+						<TrackerMap route={route} />
+					) : (
+						<div className="h-full flex justify-center items-center">
+							<LoadingPoints />
+						</div>
 					)}
-				</div>
-			</div>
+				</CardContent>
+			</Card>
+			<TrackingTable route={route} />
 			<Toaster />
-		</>
+		</div>
 	);
 }
