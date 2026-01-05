@@ -15,7 +15,6 @@ export default function TrackerPage() {
 
 	return (
 		<div className="h-screen flex flex-col">
-			{/* Stats */}
 			<div className="p-4 bg-white shadow flex justify-between">
 				<div>
 					<div className="text-xs text-gray-500">Distance</div>
@@ -55,7 +54,7 @@ export default function TrackerPage() {
 			</div>
 
 			<div className="flex-1">
-				<TrackerMap route={route} isTracking={isTracking} />
+				<TrackerMap route={route} />
 			</div>
 		</div>
 	);

@@ -4,10 +4,9 @@ import { MapContainer, Marker, Polyline, TileLayer } from "react-leaflet";
 
 interface Props {
 	route: { lat: number; lng: number }[];
-	isTracking?: boolean;
 }
 
-export default function TrackerMap({ route, isTracking = false }: Props) {
+export default function TrackerMap({ route }: Props) {
 	const lastPoint = route[route.length - 1];
 
 	const center = route.length
