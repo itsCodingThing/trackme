@@ -3,6 +3,21 @@ import TrackerMap from "@/components/tracker-map";
 import { Button } from "@/components/ui/button";
 import useGeoTracker from "@/hooks/useGeoTracker";
 import { Toaster } from "@/components/ui/sonner";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner";
+
+function LoadingPoints() {
+	return (
+		<Item variant="muted">
+			<ItemMedia>
+				<Spinner />
+			</ItemMedia>
+			<ItemContent>
+				<ItemTitle className="line-clamp-1">Processing ...</ItemTitle>
+			</ItemContent>
+		</Item>
+	);
+}
 
 export default function TrackerPage() {
 	const { route, distance, isTracking, start, pause, stop, reset } =
@@ -50,8 +65,14 @@ export default function TrackerPage() {
 				</div>
 
 				<div className="flex-1 p-2">
-					{route.length ? (
-						<TrackerMap route={route} />
+					{isTracking ? (
+						route.length ? (
+							<TrackerMap route={route} />
+						) : (
+							<div className="h-full flex justify-center items-center">
+								<LoadingPoints />
+							</div>
+						)
 					) : (
 						<div className="h-full flex justify-center items-center">
 							<Button type="button" onClick={start}>
