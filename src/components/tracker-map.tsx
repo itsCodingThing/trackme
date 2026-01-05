@@ -1,7 +1,6 @@
 import "leaflet/dist/leaflet.css";
 import Leaflet from "leaflet";
 import { MapContainer, Marker, Polyline, TileLayer } from "react-leaflet";
-import FollowUser from "./follow-user";
 
 interface Props {
 	route: { lat: number; lng: number }[];
@@ -31,10 +30,6 @@ export default function TrackerMap({ route, isTracking = false }: Props) {
 					<Polyline positions={route.map((p) => [p.lat, p.lng])} />
 					<Marker position={[route[0].lat, route[0].lng]} />
 					<Marker position={[lastPoint.lat, lastPoint.lng]} />
-					<FollowUser
-						position={{ lat: lastPoint.lat, lng: lastPoint.lat }}
-						isTracking={isTracking}
-					/>
 				</>
 			)}
 		</MapContainer>

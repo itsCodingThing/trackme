@@ -1,6 +1,7 @@
 import TrackerMap from "@/components/tracker-map";
 import { useGeoTracker } from "@/hooks/useGeoTracker";
 import { useEffect } from "react";
+import { Button } from "./components/ui/button";
 
 export default function TrackerPage() {
 	const { route, distance, isTracking, start, pause, stop, reset } =
@@ -23,52 +24,32 @@ export default function TrackerPage() {
 
 				<div className="flex gap-2">
 					{!isTracking && route.length === 0 && (
-						<button
-							type="button"
-							onClick={start}
-							className="px-4 py-2 bg-green-600 text-white rounded"
-						>
+						<Button type="button" onClick={start}>
 							Start
-						</button>
+						</Button>
 					)}
 
 					{isTracking && (
-						<button
-							type="button"
-							onClick={pause}
-							className="px-4 py-2 bg-yellow-500 text-white rounded"
-						>
+						<Button type="button" onClick={pause}>
 							Pause
-						</button>
+						</Button>
 					)}
 
 					{!isTracking && route.length > 0 && (
 						<>
-							<button
-								type="button"
-								onClick={start}
-								className="px-4 py-2 bg-green-600 text-white rounded"
-							>
+							<Button type="button" onClick={start}>
 								Resume
-							</button>
-							<button
-								type="button"
-								onClick={stop}
-								className="px-4 py-2 bg-red-600 text-white rounded"
-							>
+							</Button>
+							<Button type="button" onClick={stop}>
 								Stop
-							</button>
+							</Button>
 						</>
 					)}
 
 					{route.length > 0 && (
-						<button
-							type="button"
-							onClick={reset}
-							className="px-4 py-2 border rounded"
-						>
+						<Button type="button" onClick={reset}>
 							Reset
-						</button>
+						</Button>
 					)}
 				</div>
 			</div>
