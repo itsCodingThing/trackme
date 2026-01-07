@@ -8,7 +8,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { distanceBetween, type Point } from "@/hooks/useGeoTracker";
+import { distanceBetween, type Point } from "@/hooks/use-tracker";
 
 interface TrackingTableProps {
 	route: Point[];

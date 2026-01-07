@@ -14,6 +14,7 @@ export default function TrackerMap({ route }: Props) {
 			className="w-full h-full"
 			center={Leaflet.latLng(lastPoint.lat, lastPoint.lng)}
 			zoom={16}
+			zoomControl={false}
 		>
 			<TileLayer
 				attribution="© OpenStreetMap"
