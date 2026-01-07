@@ -178,5 +178,6 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 		pause,
 		stop,
 		reset,
+		requestPermission,
 	};
 }
