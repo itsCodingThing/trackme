@@ -1,5 +1,6 @@
-import * as turf from "@turf/turf";
-import { useCallback, useRef, useState } from "react";
+import { distanceBetween } from "@/lib/utils";
+import { atom, useAtom } from "jotai";
+import { useEffect, useRef } from "react";
 
 export interface Point {
 	lat: number;
@@ -20,57 +21,84 @@ const TrackingStatus = {
 	STOPPED: "stopped",
 } as const;
 
-type TrackingState = (typeof TrackingStatus)[keyof typeof TrackingStatus];
+const PermissionStatus = {
+	GRANTED: "granted",
+	DENIED: "denied",
+	CHECKING: "checking",
+} as const;
 
-export function distanceBetween(p1: Point, p2: Point) {
-	return turf.distance(
-		turf.point([p1.lng, p1.lat]),
-		turf.point([p2.lng, p2.lat]),
-		{ units: "meters" },
-	);
+type TrackingState = (typeof TrackingStatus)[keyof typeof TrackingStatus];
+type PersmissionState =
+	(typeof PermissionStatus)[keyof typeof PermissionStatus];
+
+interface GeoTrackerState {
+	coords: Point[];
+	distance: number;
+	status: TrackingState;
+	permission: PersmissionState;
+	error: GeolocationPositionError | null;
 }
 
+const state = atom<GeoTrackerState>({
+	coords: [],
+	distance: 0,
+	status: "idle",
+	permission: "checking",
+	error: null,
+});
+
 export default function useGeoTracker(options: GeolocationOptions = {}) {
+	const [geo, setGeo] = useAtom(state);
 	const watchIdRef = useRef<number | null>(null);
 	const lastPointRef = useRef<Point | null>(null);
 
-	const [route, setRoute] = useState<Point[]>([]);
-	const [distance, setDistance] = useState(0); // meters
-	const [status, setStatus] = useState<TrackingState>("idle");
+	useEffect(() => {
+		checkPermission();
+		async function checkPermission() {
+			try {
+				const permissions = await navigator.permissions.query({
+					name: "geolocation",
+				});
 
-	const start = useCallback(async () => {
-		if (!navigator.geolocation) {
-			return;
+				if (permissions.state === "denied" || permissions.state === "granted") {
+					const per = permissions.state;
+
+					setGeo((prev) => {
+						return {
+							...prev,
+							permission: per,
+						};
+					});
+
+					return;
+				}
+
+				// prompt permission
+				navigator.geolocation.getCurrentPosition(() => {
+					setGeo((prev) => {
+						return {
+							...prev,
+							permission: "granted",
+						};
+					});
+				});
+			} catch (error) {
+				console.log(error);
+			}
 		}
 
+		return () => {
+			if (watchIdRef.current !== null) {
+				navigator.geolocation.clearWatch(watchIdRef.current);
+			}
+		};
+	}, [setGeo]);
+
+	const start = async () => {
 		if (watchIdRef.current !== null) return;
 
-		let permission: PermissionStatus;
-		try {
-			permission = await navigator.permissions.query({ name: "geolocation" });
-		} catch (error) {
-			console.log(error);
-			return;
-		}
-
-		if (permission.state === "prompt") {
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					console.log(position.coords);
-				},
-				(err) => {
-					console.log(err);
-				},
-				options,
-			);
-		}
-
-		if (permission.state === "denied") {
-			console.log("need permissions for geolocation");
-		}
-
-		if (permission.state === "granted") {
-			setStatus("tracking");
+		if (geo.permission === "granted") {
+			setGeo((prev) => ({ ...prev, status: "tracking" }));
 
 			watchIdRef.current = navigator.geolocation.watchPosition(
 				(position) => {
@@ -85,21 +113,24 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 						timestamp: position.timestamp,
 					};
 
-					setRoute((prev) => [...prev, point]);
+					setGeo((prev) => ({ ...prev, coords: [...prev.coords, point] }));
 
 					if (lastPointRef.current) {
 						const d = distanceBetween(lastPointRef.current, point);
-						setDistance((prev) => prev + d);
+						setGeo((prev) => ({ ...prev, distance: prev.distance + d }));
 					}
 
 					lastPointRef.current = point;
 				},
 				(err) => {
-					console.log(err);
-
-					setStatus("stopped");
-					setRoute([]);
-					setDistance(0);
+					if (err.code === 1) {
+						setGeo((prev) => {
+							return {
+								...prev,
+								permission: "denied",
+							};
+						});
+					}
 
 					if (watchIdRef.current !== null) {
 						navigator.geolocation.clearWatch(watchIdRef.current);
@@ -111,73 +142,42 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 				options,
 			);
 		}
-	}, [options]);
+	};
 
-	const requestPermission = useCallback(async () => {
-		if (!navigator.geolocation) {
-			return;
-		}
-
-		const permission = await navigator.permissions.query({
-			name: "geolocation",
-		});
-
-		if (permission.state === "granted") {
-			return;
-		}
-
-		return new Promise((resolve, reject) => {
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					resolve(position);
-				},
-				(err) => {
-					reject(err);
-				},
-				options,
-			);
-		});
-	}, [options]);
-
-	const pause = useCallback(() => {
+	const pause = () => {
 		if (!watchIdRef.current) return;
 
 		navigator.geolocation.clearWatch(watchIdRef.current);
 		watchIdRef.current = null;
 
-		setStatus("paused");
-	}, []);
+		setGeo((prev) => ({ ...prev, status: "paused" }));
+	};
 
-	const stop = useCallback(() => {
+	const stop = () => {
 		if (!watchIdRef.current) return;
 
 		navigator.geolocation.clearWatch(watchIdRef.current);
 		watchIdRef.current = null;
 		lastPointRef.current = null;
 
-		setStatus("stopped");
-	}, []);
+		setGeo((prev) => ({ ...prev, status: "stopped" }));
+	};
 
-	const reset = useCallback(() => {
+	const reset = () => {
 		if (!watchIdRef.current) return;
 
 		navigator.geolocation.clearWatch(watchIdRef.current);
 		watchIdRef.current = null;
 		lastPointRef.current = null;
 
-		setRoute([]);
-		setDistance(0);
-		setStatus("idle");
-	}, []);
+		setGeo((prev) => ({ ...prev, coords: [], distance: 0, status: "idle" }));
+	};
 
 	return {
-		route,
-		distance,
-		status,
+		geo,
 		start,
 		pause,
 		stop,
 		reset,
-		requestPermission,
 	};
 }
