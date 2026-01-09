@@ -1,1 +1,1 @@
-export { PlusIcon } from "lucide-react";
+export { PlusIcon, WifiOffIcon } from "lucide-react";
