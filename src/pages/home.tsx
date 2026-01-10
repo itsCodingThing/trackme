@@ -1,10 +1,17 @@
 import { Page, Fab, Card, Chip } from "konsta/react";
 import { PlusIcon, WifiOffIcon } from "@/components/icons";
-import { usePage } from "@/hooks/use-page";
 import { useNetworkState } from "@uidotdev/usehooks";
+import { createRoute, useNavigate } from "@tanstack/react-router";
+import { rootRoute } from "@/app";
+
+export const homeRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/",
+	component: () => <Home />,
+});
 
 export default function Home() {
-	const [_, setPage] = usePage();
+	const navigate = useNavigate({ from: "/" });
 	const network = useNetworkState();
 
 	return (
@@ -16,7 +23,7 @@ export default function Home() {
 					text="Start"
 					textPosition="after"
 					onClick={() => {
-						setPage("Tracker");
+						navigate({ to: "/tracker" });
 					}}
 				/>
 			) : (

@@ -1,8 +1,10 @@
 import TrackerMap from "@/components/tracker-map";
 import useGeoTracker from "@/hooks/use-tracker";
-import { Page } from "konsta/react";
+import { Block, Button, Page, Preloader } from "konsta/react";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion, useTime, useTransform } from "motion/react";
+import { createRoute } from "@tanstack/react-router";
+import { rootRoute } from "@/app";
 
 const distanceKm = (m: number) => (m / 1000).toFixed(2);
 const demo = [
@@ -22,9 +24,23 @@ function Stat({ label, value }: { label: string; value: string }) {
 	);
 }
 
+export const trackerRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/tracker",
+	component: () => <Tracker />,
+});
+
 export default function Tracker() {
 	const tracker = useGeoTracker();
 	const [isExpanded, setIsExpanded] = useState(false); // percentage of screen height
+	const time = useTime();
+	const formattedTime = useTransform(time, (t) => {
+		const totalSeconds = Math.floor(t / 1000);
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = totalSeconds % 60;
+
+		return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+	});
 
 	useEffect(() => {
 		tracker.start();
@@ -57,12 +73,20 @@ export default function Tracker() {
 			<motion.div
 				className="absolute inset-x-0 top-0 z-0"
 				animate={{
-					height: isExpanded ? "30vh" : "90vh",
+					height: isExpanded ? "30vh" : "100vh",
 				}}
 			>
-				<TrackerMap
-					coords={tracker.geo.coords.length ? tracker.geo.coords : demo}
-				/>
+				{tracker.geo.coords.length ? (
+					<TrackerMap coords={tracker.geo.coords} />
+				) : (
+					<Block
+						strong
+						inset
+						className="flex justify-center items-center gap-2"
+					>
+						<Preloader /> Loading Coordinates...
+					</Block>
+				)}
 			</motion.div>
 
 			{/* Bottom Sheet */}
@@ -110,7 +134,9 @@ export default function Tracker() {
 						</div>
 						<div>
 							<p className="text-sm text-muted-foreground">Duration</p>
-							<p className="text-2xl font-bold">24:18</p>
+							<motion.p className="text-2xl font-bold">
+								{formattedTime}
+							</motion.p>
 						</div>
 						<div>
 							<p className="text-sm text-muted-foreground">Pace</p>
@@ -133,18 +159,12 @@ export default function Tracker() {
 
 						{/* Action Buttons */}
 						<div className="flex gap-3 pt-4">
-							<motion.button
-								whileTap={{ scale: 0.95 }}
-								className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold"
-							>
-								Stop Tracking
-							</motion.button>
-							<motion.button
-								whileTap={{ scale: 0.95 }}
-								className="flex-1 bg-muted py-3 rounded-xl font-semibold"
-							>
+							<Button className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold">
+								Stop
+							</Button>
+							<Button className="flex-1 bg-muted py-3 text-black rounded-xl font-semibold">
 								Pause
-							</motion.button>
+							</Button>
 						</div>
 					</motion.div>
 				</div>

@@ -1,17 +1,36 @@
 import { App } from "konsta/react";
 import { Toaster } from "sonner";
-import { usePage } from "@/hooks/use-page";
-import Home from "@/pages/home";
-import Tracker from "@/pages/tracker";
+import { homeRoute } from "@/pages/home";
+import { trackerRoute } from "@/pages/tracker";
+import {
+	Outlet,
+	RouterProvider,
+	createRouter,
+	createRootRoute,
+} from "@tanstack/react-router";
+
+import "./styles/app.css";
+
+export const rootRoute = createRootRoute({
+	component: () => {
+		return (
+			<App>
+				<Outlet />
+				<Toaster />
+			</App>
+		);
+	},
+});
+
+const routeTree = rootRoute.addChildren([homeRoute, trackerRoute]);
+const router = createRouter({ routeTree });
+
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router;
+	}
+}
 
 export default function MainApp() {
-	const [page] = usePage();
-
-	return (
-		<App>
-			{page === "Home" && <Home />}
-			{page === "Tracker" && <Tracker />}
-			<Toaster />
-		</App>
-	);
+	return <RouterProvider router={router} />;
 }
