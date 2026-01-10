@@ -44,6 +44,7 @@ export default function Tracker() {
 
 	useEffect(() => {
 		tracker.start();
+		console.log(demo);
 	}, [tracker]);
 
 	const sheetParent = {
