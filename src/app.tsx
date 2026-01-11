@@ -2,6 +2,9 @@ import { App } from "konsta/react";
 import { Toaster } from "sonner";
 import { HomeRoute } from "@/pages/home";
 import { TrackerRoute } from "@/pages/tracker";
+import { SettingsRoute } from "@/pages/settings";
+import { ProfileRoute } from "@/pages/profile";
+import BottomNav from "@/components/bottom-nav";
 import {
 	Outlet,
 	RouterProvider,
@@ -16,13 +19,19 @@ export const rootRoute = createRootRoute({
 		return (
 			<App>
 				<Outlet />
+				<BottomNav />
 				<Toaster />
 			</App>
 		);
 	},
 });
 
-const routeTree = rootRoute.addChildren([HomeRoute, TrackerRoute]);
+const routeTree = rootRoute.addChildren([
+	HomeRoute,
+	TrackerRoute,
+	SettingsRoute,
+	ProfileRoute,
+]);
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {

@@ -1,1 +1,22 @@
-export { PlusIcon, WifiOffIcon } from "lucide-react";
+export {
+	PlusIcon,
+	WifiOffIcon,
+	HomeIcon,
+	MapIcon,
+	SettingsIcon,
+	UserIcon,
+	BellIcon,
+	ShieldIcon,
+	HelpCircleIcon,
+	InfoIcon,
+	EditIcon,
+	CameraIcon,
+	MapPinIcon,
+	ActivityIcon,
+	HardDriveIcon,
+	TrendingUpIcon,
+	TimerIcon,
+	TargetIcon,
+	ClockIcon,
+	Goal as BullseyeIcon,
+} from "lucide-react";

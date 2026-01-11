@@ -1,19 +1,12 @@
 import TrackerMap from "@/components/tracker-map";
 import useGeoTracker from "@/hooks/use-tracker";
 import { Block, Button, Chip, Page, Preloader } from "konsta/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useTime, useTransform } from "motion/react";
 import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "@/app";
 
 const distanceKm = (m: number) => (m / 1000).toFixed(2);
-const demo = [
-	{
-		lat: 26.9136,
-		lng: 75.7858,
-		timestamp: 1767908293687,
-	},
-];
 
 function Stat({ label, value }: { label: string; value: string }) {
 	return (
@@ -84,7 +77,7 @@ const sheetChild = {
 
 export default function Tracker() {
 	const tracker = useGeoTracker();
-	const [isExpanded, setIsExpanded] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(true);
 	const timer = useMotionTimer();
 
 	useEffect(() => {
@@ -93,7 +86,7 @@ export default function Tracker() {
 	}, []);
 
 	return (
-		<Page className="overflow-hidden">
+		<Page className="overflow-hidden pb-20">
 			{/* Map takes remaining height */}
 			<motion.div
 				className="absolute inset-x-0 top-0 z-0"
