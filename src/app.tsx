@@ -22,9 +22,9 @@ export const rootRoute = createRootRoute({
 
 		return (
 			<App className={theme}>
+				<Toaster />
 				<Outlet />
 				<BottomNav />
-				<Toaster />
 			</App>
 		);
 	},
