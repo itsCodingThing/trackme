@@ -92,12 +92,15 @@ export default function useGeoTracker(options: GeolocationOptions = {}) {
 				navigator.geolocation.clearWatch(watchIdRef.current);
 			}
 		};
-	}, [setGeo]);
+	}, []);
 
 	const start = async () => {
+		const time = Date.now();
+		console.log("geo start....", time);
 		if (watchIdRef.current !== null) return;
 
 		if (geo.permission === "granted") {
+			console.log("geo permission start....", time);
 			setGeo((prev) => ({ ...prev, status: "tracking" }));
 
 			watchIdRef.current = navigator.geolocation.watchPosition(

@@ -4,7 +4,7 @@ import { useNetworkState } from "@uidotdev/usehooks";
 import { createRoute, useNavigate } from "@tanstack/react-router";
 import { rootRoute } from "@/app";
 
-export const homeRoute = createRoute({
+export const HomeRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/",
 	component: () => <Home />,

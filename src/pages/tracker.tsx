@@ -1,7 +1,7 @@
 import TrackerMap from "@/components/tracker-map";
 import useGeoTracker from "@/hooks/use-tracker";
-import { Block, Button, Page, Preloader } from "konsta/react";
-import { useEffect, useState } from "react";
+import { Block, Button, Chip, Page, Preloader } from "konsta/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, useTime, useTransform } from "motion/react";
 import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "@/app";
@@ -24,49 +24,73 @@ function Stat({ label, value }: { label: string; value: string }) {
 	);
 }
 
-export const trackerRoute = createRoute({
+function useMotionTimer() {
+	const time = useTime();
+	const [startTime, setStartTime] = useState<number | null>(null);
+	const [pausedAt, setPausedAt] = useState(0);
+
+	const elapsed = useTransform(time, (t) => {
+		if (startTime === null) return pausedAt;
+		return pausedAt + (t - startTime);
+	});
+
+	const timer = useTransform(elapsed, (t) => {
+		const s = Math.floor(t / 1000);
+		return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+	});
+
+	const start = () => {
+		setStartTime(Date.now());
+	};
+
+	const pause = () => {
+		setPausedAt(elapsed.get());
+		setStartTime(null);
+	};
+
+	return {
+		time: timer,
+		start,
+		pause,
+	};
+}
+
+export const TrackerRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/tracker",
 	component: () => <Tracker />,
 });
 
+const sheetParent = {
+	expanded: {
+		height: "70vh",
+	},
+	collapsed: {
+		height: "auto",
+	},
+};
+
+const sheetChild = {
+	expanded: {
+		opacity: 1,
+		height: "auto",
+	},
+	collapsed: {
+		opacity: 0,
+		height: 0,
+		display: "none",
+	},
+};
+
 export default function Tracker() {
 	const tracker = useGeoTracker();
-	const [isExpanded, setIsExpanded] = useState(false); // percentage of screen height
-	const time = useTime();
-	const formattedTime = useTransform(time, (t) => {
-		const totalSeconds = Math.floor(t / 1000);
-		const minutes = Math.floor(totalSeconds / 60);
-		const seconds = totalSeconds % 60;
-
-		return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-	});
+	const [isExpanded, setIsExpanded] = useState(false);
+	const timer = useMotionTimer();
 
 	useEffect(() => {
 		tracker.start();
-		console.log(demo);
-	}, [tracker]);
-
-	const sheetParent = {
-		expanded: {
-			height: "70vh",
-		},
-		collapsed: {
-			height: "auto",
-		},
-	};
-
-	const sheetChild = {
-		expanded: {
-			opacity: 1,
-			height: "auto",
-		},
-		collapsed: {
-			opacity: 0,
-			height: 0,
-			display: "none",
-		},
-	};
+		timer.start();
+	}, []);
 
 	return (
 		<Page className="overflow-hidden">
@@ -89,6 +113,10 @@ export default function Tracker() {
 					</Block>
 				)}
 			</motion.div>
+
+			<Chip className="m-1 absolute top-0 left-0 animate-pulse">
+				{tracker.geo.status}
+			</Chip>
 
 			{/* Bottom Sheet */}
 			<motion.div
@@ -135,9 +163,7 @@ export default function Tracker() {
 						</div>
 						<div>
 							<p className="text-sm text-muted-foreground">Duration</p>
-							<motion.p className="text-2xl font-bold">
-								{formattedTime}
-							</motion.p>
+							<motion.p className="text-2xl font-bold">{timer.time}</motion.p>
 						</div>
 						<div>
 							<p className="text-sm text-muted-foreground">Pace</p>
@@ -160,10 +186,21 @@ export default function Tracker() {
 
 						{/* Action Buttons */}
 						<div className="flex gap-3 pt-4">
-							<Button className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold">
+							<Button
+								className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold"
+								onClick={() => {
+									tracker.start();
+									timer.start();
+								}}
+							>
 								Stop
 							</Button>
-							<Button className="flex-1 bg-muted py-3 text-black rounded-xl font-semibold">
+							<Button
+								className="flex-1 bg-muted py-3 text-black rounded-xl font-semibold"
+								onClick={() => {
+									tracker.pause();
+								}}
+							>
 								Pause
 							</Button>
 						</div>
