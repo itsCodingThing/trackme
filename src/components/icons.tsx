@@ -19,4 +19,9 @@ export {
 	TargetIcon,
 	ClockIcon,
 	Goal as BullseyeIcon,
+	SunIcon,
+	MoonIcon,
+	MonitorIcon,
+	PaletteIcon,
+	BrushIcon,
 } from "lucide-react";

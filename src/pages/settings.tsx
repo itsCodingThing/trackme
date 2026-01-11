@@ -10,6 +10,7 @@ import {
 	MapPinIcon,
 	ActivityIcon,
 	HardDriveIcon,
+	PaletteIcon,
 } from "@/components/icons";
 
 export const SettingsRoute = createRoute({
@@ -31,6 +32,12 @@ export default function Settings() {
 					media={<UserIcon className="w-5 h-5" />}
 					after=">"
 					onClick={() => navigate({ to: "/profile" })}
+				/>
+				<ListItem
+					title="Appearance"
+					media={<PaletteIcon className="w-5 h-5" />}
+					after=">"
+					onClick={() => navigate({ to: "/appearance" })}
 				/>
 				<ListItem
 					title="Notifications"

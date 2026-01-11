@@ -4,7 +4,9 @@ import { HomeRoute } from "@/pages/home";
 import { TrackerRoute } from "@/pages/tracker";
 import { SettingsRoute } from "@/pages/settings";
 import { ProfileRoute } from "@/pages/profile";
+import { AppearanceRoute } from "@/pages/appearance";
 import BottomNav from "@/components/bottom-nav";
+import { useTheme } from "@/store/theme";
 import {
 	Outlet,
 	RouterProvider,
@@ -16,8 +18,10 @@ import "./styles/app.css";
 
 export const rootRoute = createRootRoute({
 	component: () => {
+		const theme = useTheme();
+
 		return (
-			<App>
+			<App className={theme}>
 				<Outlet />
 				<BottomNav />
 				<Toaster />
@@ -31,6 +35,7 @@ const routeTree = rootRoute.addChildren([
 	TrackerRoute,
 	SettingsRoute,
 	ProfileRoute,
+	AppearanceRoute,
 ]);
 const router = createRouter({ routeTree });
 
