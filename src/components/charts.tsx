@@ -1,4 +1,5 @@
 import { Card, BlockTitle } from "konsta/react";
+import { cn } from "@/lib/utils";
 
 interface ChartBarProps {
 	value: number;
@@ -19,7 +20,7 @@ function ChartBar({
 		<div className="flex flex-col items-center flex-1">
 			<div className="w-full flex flex-col items-center justify-end h-20">
 				<div
-					className={`w-6 rounded-t ${color} transition-all duration-300`}
+					className={cn("w-6 rounded-t transition-all duration-300", color)}
 					style={{ height: `${heightPercentage}%` }}
 				/>
 			</div>
@@ -108,7 +109,7 @@ export function ProgressRing({
 					fill="none"
 					strokeDasharray={circumference}
 					strokeDashoffset={strokeDashoffset}
-					className={`${color} transition-all duration-300`}
+					className={cn(color, "transition-all duration-300")}
 					strokeLinecap="round"
 				/>
 			</svg>

@@ -1,6 +1,7 @@
 import { List, ListItem, Card, BlockTitle } from "konsta/react";
 import { format } from "date-fns";
 import { MapIcon, TimerIcon, TrendingUpIcon } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
 interface Activity {
 	id: string;
@@ -69,7 +70,10 @@ export function PastActivities({ activities }: PastActivitiesProps) {
 						after={
 							<div className="text-right">
 								<p
-									className={`font-semibold ${getActivityColor(activity.type)}`}
+									className={cn(
+										"font-semibold",
+										getActivityColor(activity.type),
+									)}
 								>
 									{activity.distance} km
 								</p>

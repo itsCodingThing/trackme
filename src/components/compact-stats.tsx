@@ -1,5 +1,6 @@
 import { Card } from "konsta/react";
 import { TrendingUpIcon } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
 interface CompactStatProps {
 	title: string;
@@ -28,13 +29,13 @@ function CompactStat({
 
 	return (
 		<div className="flex flex-col items-center text-center p-3 min-w-[100px]">
-			<div className={`p-2 rounded-lg ${colorClasses[color]} mb-2`}>
+			<div className={cn("p-2 rounded-lg mb-2", colorClasses[color])}>
 				<Icon className="w-5 h-5" />
 			</div>
 			<p className="text-lg font-bold leading-tight">{value}</p>
 			<p className="text-xs text-muted-foreground leading-tight">{title}</p>
 			{trend && (
-				<div className={`flex items-center text-xs text-green-600 mt-1`}>
+				<div className={cn("flex items-center text-xs text-green-600 mt-1")}>
 					<TrendingUpIcon className="w-3 h-3 mr-1" />
 					<span className="truncate">{trend.value.split(" ")[0]}</span>
 				</div>

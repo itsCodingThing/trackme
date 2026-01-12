@@ -1,5 +1,6 @@
 import { Page, BlockTitle, Card, Button } from "konsta/react";
 import { FloatingTrackingUI } from "@/components/floating-tracking-ui";
+import { PermissionTestComponent } from "@/components/permission-test";
 import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "@/app";
 
@@ -126,21 +127,7 @@ export default function TestPage() {
 						</div>
 					</Card>
 
-					<Card className="p-4">
-						<BlockTitle className="px-0">Navigation Tests</BlockTitle>
-						<div className="space-y-2 text-sm">
-							<p>Current pathname: {window.location.pathname}</p>
-							<p>Available routes:</p>
-							<ul className="list-disc list-inside text-muted-foreground">
-								<li>/ - Home</li>
-								<li>/tracker - Tracker</li>
-								<li>/settings - Settings</li>
-								<li>/profile - Profile</li>
-								<li>/appearance - Appearance</li>
-								<li>/test - This page</li>
-							</ul>
-						</div>
-					</Card>
+					<PermissionTestComponent />
 
 					<Card className="p-4">
 						<BlockTitle className="px-0">Component Grid</BlockTitle>

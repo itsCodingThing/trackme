@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "konsta/react";
 import { motion } from "motion/react";
 import {
@@ -9,6 +9,7 @@ import {
 	PlayIcon,
 	TrendingUpIcon,
 } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
 interface TrackingStats {
 	distance: number;
@@ -63,29 +64,22 @@ export function FloatingTrackingUI({
 	return (
 		<motion.div
 			drag
-			className={`
-				w-72 md:w-80
-				pointer-events-auto
-				transition-all duration-300 ease-in-out
-				${showExpanded ? "translate-y-0" : "-translate-y-16"}
-				${className}
-			`}
+			className={cn(
+				"w-72 md:w-80 pointer-events-auto transition-all duration-300 ease-in-out",
+				showExpanded ? "translate-y-0" : "-translate-y-16",
+				className,
+			)}
 		>
 			<Card
-				className={`
-					p-3 shadow-2xl border-2
-					${status.color.replace("bg-", "border-")}
-					backdrop-blur-md bg-card/90
-					shadow-black/20
-				`}
+				className={cn(
+					"p-3 shadow-2xl border-2 backdrop-blur-md bg-card/90 shadow-black/20",
+					status.color.replace("bg-", "border-"),
+				)}
 			>
 				<div className="flex items-center justify-between mb-3">
 					<div className="flex items-center space-x-2">
 						<div
-							className={`
-							w-2 h-2 rounded-full animate-pulse
-							${status.color}
-						`}
+							className={cn("w-2 h-2 rounded-full animate-pulse", status.color)}
 						/>
 						<span className="text-sm font-medium">{status.text}</span>
 					</div>
@@ -97,7 +91,10 @@ export function FloatingTrackingUI({
 							className="p-1 rounded hover:bg-muted/50 transition-colors"
 						>
 							<TrendingUpIcon
-								className={`w-4 h-4 transition-transform ${showExpanded ? "rotate-180" : ""}`}
+								className={cn(
+									"w-4 h-4 transition-transform",
+									showExpanded && "rotate-180",
+								)}
 							/>
 						</button>
 

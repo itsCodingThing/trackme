@@ -1,5 +1,6 @@
 import { Card, Button, BlockTitle } from "konsta/react";
 import { ProgressRing } from "@/components/charts";
+import { cn } from "@/lib/utils";
 
 interface GoalCardProps {
 	title: string;
@@ -25,7 +26,7 @@ function GoalCard({
 			<div className="flex items-center justify-between">
 				<div className="flex-1">
 					<div className="flex items-center mb-2">
-						<Icon className={`w-5 h-5 mr-2 ${color}`} />
+						<Icon className={cn("w-5 h-5 mr-2", color)} />
 						<h3 className="font-semibold">{title}</h3>
 					</div>
 					<div className="flex items-baseline gap-2">

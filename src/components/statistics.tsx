@@ -1,5 +1,6 @@
 import { Card } from "konsta/react";
 import { TrendingUpIcon } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
 interface StatCardProps {
 	title: string;
@@ -38,7 +39,7 @@ export function StatCard({
 			<div className="flex items-center justify-between">
 				<div className="flex items-center space-x-3">
 					<div
-						className={`p-2 rounded-lg ${colorClasses[color]} flex-shrink-0`}
+						className={cn("p-2 rounded-lg flex-shrink-0", colorClasses[color])}
 					>
 						<Icon className="w-5 h-5" />
 					</div>
@@ -54,7 +55,10 @@ export function StatCard({
 						)}
 						{trend && (
 							<div
-								className={`flex items-center text-xs ${trendColorClasses[trend.direction]} mt-1`}
+								className={cn(
+									"flex items-center text-xs mt-1",
+									trendColorClasses[trend.direction],
+								)}
 							>
 								<TrendingUpIcon className="w-3 h-3 mr-1 flex-shrink-0" />
 								<span className="truncate">{trend.value}</span>

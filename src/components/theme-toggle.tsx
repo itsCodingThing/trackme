@@ -1,6 +1,7 @@
 import { Card, BlockTitle } from "konsta/react";
 import { SunIcon, MoonIcon, MonitorIcon } from "@/components/icons";
 import { useSavedThemePref, useSetTheme } from "@/store/theme";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
 	const setTheme = useSetTheme();
@@ -41,24 +42,24 @@ export function ThemeToggle() {
 							<button
 								key={option.value}
 								type="button"
-								className={`
-									flex items-center justify-between w-full p-3 rounded-lg transition-all
-									${
-										isActive
-											? "bg-primary/10 border-2 border-primary"
-											: "bg-muted/30 border-2 border-transparent hover:bg-muted/50"
-									}
-								`}
+								className={cn(
+									"flex items-center justify-between w-full p-3 rounded-lg transition-all",
+									isActive
+										? "bg-primary/10 border-2 border-primary"
+										: "bg-muted/30 border-2 border-transparent hover:bg-muted/50",
+								)}
 								onClick={() => {
 									setTheme(option.value);
 								}}
 							>
 								<div className="flex items-center space-x-3">
 									<div
-										className={`
-										p-2 rounded-lg
-										${isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}
-									`}
+										className={cn(
+											"p-2 rounded-lg",
+											isActive
+												? "bg-primary text-primary-foreground"
+												: "bg-muted text-muted-foreground",
+										)}
 									>
 										<Icon className="w-4 h-4" />
 									</div>
