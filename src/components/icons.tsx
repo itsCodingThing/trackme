@@ -24,4 +24,6 @@ export {
 	MonitorIcon,
 	PaletteIcon,
 	BrushIcon,
+	PauseIcon,
+	PlayIcon,
 } from "lucide-react";

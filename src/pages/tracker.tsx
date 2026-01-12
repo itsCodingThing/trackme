@@ -1,10 +1,11 @@
 import TrackerMap from "@/components/tracker-map";
 import useGeoTracker from "@/hooks/use-tracker";
-import { Block, Chip, Fab, Page, Preloader } from "konsta/react";
+import { Block, Chip, Page, Preloader } from "konsta/react";
 import { useEffect } from "react";
 import { createRoute, useNavigate } from "@tanstack/react-router";
 import { rootRoute } from "@/app";
 import { HideBottomNav } from "@/components/bottom-nav";
+import { FloatingTrackingUI } from "@/components/floating-tracking-ui";
 
 export const TrackerRoute = createRoute({
 	getParentRoute: () => rootRoute,
@@ -37,10 +38,6 @@ export default function Tracker() {
 				)}
 			</div>
 
-			<Chip className="m-1 absolute top-0 right-0 animate-pulse">
-				{tracker.geo.status}
-			</Chip>
-
 			<Chip
 				className="m-1 absolute top-0 left-0"
 				onClick={() => {
@@ -50,14 +47,17 @@ export default function Tracker() {
 				Back
 			</Chip>
 
-			<Fab
-				className="m-1 absolute bottom-0 right-0"
-				onClick={() => {
-					console.log("start");
+			<FloatingTrackingUI
+				isTracking={false}
+				stats={{
+					distance: 0,
+					duration: 0,
+					pace: "0'00\"",
+					calories: 0,
+					speed: 0,
+					heartRate: 0,
 				}}
-			>
-				start
-			</Fab>
+			/>
 		</Page>
 	);
 }

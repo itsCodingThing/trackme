@@ -2,6 +2,8 @@ import * as turf from "@turf/turf";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export { format as formatDate } from "date-fns";
+
 interface Point {
 	lat: number;
 	lng: number;
