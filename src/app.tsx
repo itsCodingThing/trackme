@@ -5,8 +5,9 @@ import { TrackerRoute } from "@/pages/tracker";
 import { SettingsRoute } from "@/pages/settings";
 import { ProfileRoute } from "@/pages/profile";
 import { AppearanceRoute } from "@/pages/appearance";
+import { TestRoute } from "@/pages/test";
 import BottomNav from "@/components/bottom-nav";
-import { useTheme } from "@/store/theme";
+
 import {
 	Outlet,
 	RouterProvider,
@@ -15,6 +16,7 @@ import {
 } from "@tanstack/react-router";
 
 import "./styles/app.css";
+import { useTheme } from "./store/theme";
 
 export const rootRoute = createRootRoute({
 	component: () => {
@@ -36,6 +38,7 @@ const routeTree = rootRoute.addChildren([
 	SettingsRoute,
 	ProfileRoute,
 	AppearanceRoute,
+	TestRoute,
 ]);
 const router = createRouter({ routeTree });
 
